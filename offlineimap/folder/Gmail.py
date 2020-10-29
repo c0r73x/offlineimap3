@@ -129,7 +129,7 @@ class GmailFolder(IMAPFolder):
             # imaplib2 from quoting the sequence.
             #
             # NB: msgsToFetch are sequential numbers, not UID's
-            res_type, response = imapobj.fetch("'%s'" % msgsToFetch,
+            res_type, response = imapobj.fetch("%s" % msgsToFetch,
                                                '(FLAGS X-GM-LABELS UID)')
             if res_type != 'OK':
                 raise OfflineImapError(
@@ -147,7 +147,7 @@ class GmailFolder(IMAPFolder):
             # Discard initial message number.
             if messagestr is None:
                 continue
-            messagestr = messagestr.split(' ', 1)[1]
+            messagestr = messagestr.decode('utf-8').split(' ', 1)[1]
             # e.g.: {'X-GM-LABELS': '("Webserver (RW.net)" "\\Inbox" GInbox)', 'FLAGS': '(\\Seen)', 'UID': '275440'}
             options = imaputil.flags2hash(messagestr)
             if 'UID' not in options:
@@ -164,7 +164,7 @@ class GmailFolder(IMAPFolder):
                 else:
                     labels = set()
                 labels = labels - self.ignorelabels
-                rtime = imaplibutil.Internaldate2epoch(messagestr)
+                rtime = imaplibutil.Internaldate2epoch(messagestr.encode())
                 self.messagelist[uid] = {'uid': uid, 'flags': flags, 'labels': labels, 'time': rtime}
 
     def savemessage(self, uid, content, flags, rtime):

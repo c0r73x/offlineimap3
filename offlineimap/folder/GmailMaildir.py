@@ -17,6 +17,7 @@
 
 
 import os
+import codecs
 from sys import exc_info
 import offlineimap.accounts
 from offlineimap import OfflineImapError
@@ -90,9 +91,8 @@ class GmailMaildirFolder(MaildirFolder):
             if not os.path.exists(filepath):
                 return set()
 
-            file = open(filepath, 'rt')
-            content = file.read()
-            file.close()
+            with codecs.open(filepath, 'r', errors='replace', encoding='utf-8') as f:
+                content = f.read()
 
             self.messagelist[uid]['labels'] = set()
             for hstr in self.getmessageheaderlist(content, self.labelsheader):
@@ -145,9 +145,8 @@ class GmailMaildirFolder(MaildirFolder):
         filename = self.messagelist[uid]['filename']
         filepath = os.path.join(self.getfullname(), filename)
 
-        file = open(filepath, 'rt')
-        content = file.read()
-        file.close()
+        with codecs.open(filepath, 'r', errors='replace', encoding='utf-8') as f:
+            content = f.read()
 
         oldlabels = set()
         for hstr in self.getmessageheaderlist(content, self.labelsheader):
